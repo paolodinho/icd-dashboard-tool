@@ -50,19 +50,43 @@ def load_snapshot(report_id):
         return {}
 
 
+def load_archive(name):
+    f = DATA_PRIVATE / name
+    if not f.exists():
+        return {}
+    try:
+        return json.loads(f.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"[WARN] {name} lỗi đọc: {e}", file=sys.stderr)
+        return {}
+
+
 def main():
     pull_vps_snapshot()
 
     reports = {rid: load_snapshot(rid) for rid in REPORT_IDS}
+    crm_activity_daily = load_archive("crm-activity-daily-archive.json")
+    saleorder_daily = load_archive("saleorder-daily.json")
+    leads_daily = load_archive("leads-daily.json")
     dashboard = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "reports": reports,
+        "crmActivityDaily": crm_activity_daily.get("days", {}),
+        "saleorderDaily": {
+            "huyen": saleorder_daily.get("huyen", {}),
+            "trang": saleorder_daily.get("trang", {}),
+        },
+        "leadsDaily": leads_daily.get("days", {}),
     }
     (DATA_PRIVATE / "dashboard.json").write_text(
-        json.dumps(dashboard, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(dashboard, ensure_ascii=False), encoding="utf-8"
     )
     have = [rid for rid, r in reports.items() if r.get("html")]
-    print(f"Đã gộp {len(have)}/{len(REPORT_IDS)} báo cáo: {', '.join(have) or 'không có'}")
+    print(f"Đã gộp {len(have)}/{len(REPORT_IDS)} báo cáo snapshot: {', '.join(have) or 'không có'}")
+    print(f"Archive theo ngày: CRM activity {len(dashboard['crmActivityDaily'])} ngày, "
+          f"Huyền {len(dashboard['saleorderDaily']['huyen'])} ngày, "
+          f"Trang {len(dashboard['saleorderDaily']['trang'])} ngày, "
+          f"Leads {len(dashboard['leadsDaily'])} ngày")
 
     r = subprocess.run(["node", "build-enc.mjs"], cwd=str(HERE), capture_output=True, text=True)
     print(r.stdout.strip())

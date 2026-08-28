@@ -32,31 +32,51 @@
   #gate-msg{font-size:13px;color:#6B7780;margin-top:10px;min-height:18px}
 
   /* ---- App ---- */
-  #app-root{display:none;padding:20px;max-width:1100px;margin:0 auto}
+  #app-root{display:none;padding:20px;max-width:1180px;margin:0 auto}
   header{display:flex;align-items:center;justify-content:space-between;
-         margin-bottom:18px;flex-wrap:wrap;gap:8px}
+         margin-bottom:14px;flex-wrap:wrap;gap:8px}
   header h1{font-size:19px;color:#27343A}
   header .gen-at{font-size:12.5px;color:#6B7780}
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
   .tab{background:#FFFFFF;border:1px solid #E2E5E8;color:#27343A;padding:10px 15px;
-       border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;
-       display:flex;align-items:center;gap:7px}
+       border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer}
   .tab.active{border-color:#FB7703;border-left:3px solid #FB7703;background:#FFF8F2}
-  .dot{width:8px;height:8px;border-radius:50%;background:#C9CFD4;flex:none}
-  .dot.fresh{background:#1F9D55}
-  .dot.stale{background:#E8610A}
-  .dot.missing{background:#C0392B}
-  .panel{background:#FFFFFF;border:1px solid #E2E5E8;border-radius:10px;overflow:hidden}
-  .panel-meta{background:#FAFBFC;border-bottom:1px solid #E2E5E8;padding:11px 16px;
-              font-size:12.5px;color:#6B7780;display:flex;justify-content:space-between;
-              flex-wrap:wrap;gap:6px}
-  .panel-meta b{color:#27343A}
-  iframe#report-frame{width:100%;height:76vh;min-height:460px;border:none;
-                      display:block;background:#fff}
-  .mode-switch{display:flex;gap:6px;margin-bottom:14px;background:#EAECEF;border-radius:8px;padding:4px;width:fit-content}
-  .mode-btn{border:none;background:transparent;padding:8px 16px;border-radius:6px;font-size:13.5px;
+
+  /* ---- Controls ---- */
+  .controls{background:#FFFFFF;border:1px solid #E2E5E8;border-radius:10px;padding:14px 16px;
+            margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-end}
+  .ctl-group{display:flex;flex-direction:column;gap:4px}
+  .ctl-group label{font-size:11.5px;color:#6B7780;font-weight:600;text-transform:uppercase;letter-spacing:.02em}
+  .ctl-group select, .ctl-group input{padding:8px 10px;border:1px solid #C9CFD4;border-radius:6px;
+            font-size:13.5px;color:#27343A;background:#fff}
+  .mode-switch{display:flex;gap:6px;background:#EAECEF;border-radius:8px;padding:4px}
+  .mode-btn{border:none;background:transparent;padding:7px 14px;border-radius:6px;font-size:13px;
             font-weight:600;color:#6B7780;cursor:pointer}
   .mode-btn.active{background:#FFFFFF;color:#27343A;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .compare-b{display:none;gap:10px 18px;align-items:flex-end}
+  .compare-b.show{display:flex}
+  .vs-divider{color:#B5BBBE;font-weight:700;font-size:13px;padding-bottom:9px}
+
+  /* ---- Content ---- */
+  .panel{background:#FFFFFF;border:1px solid #E2E5E8;border-radius:10px;padding:18px 20px}
+  .kpi-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px}
+  .kpi{flex:1;min-width:130px;background:#F0F4FF;border:1px solid #DDE4F5;border-radius:8px;
+       padding:12px 14px;text-align:center}
+  .kpi .num{font-size:22px;font-weight:700;color:#1a5fa8}
+  .kpi .lbl{font-size:11.5px;color:#6B7780;margin-top:2px}
+  .kpi .delta{font-size:12px;font-weight:700;margin-top:4px}
+  .kpi .delta.up{color:#1F9D55}
+  .kpi .delta.down{color:#C0392B}
+  h3.sec{font-size:15px;color:#27343A;margin:18px 0 10px;padding-left:10px;border-left:3px solid #FB7703}
+  table.data{width:100%;border-collapse:collapse;font-size:13px}
+  table.data th{background:#27343A;color:#fff;padding:8px 12px;text-align:left;font-weight:600;font-size:12.5px}
+  table.data td{padding:7px 12px;border-bottom:1px solid #F0F0F0}
+  table.data tr:nth-child(even) td{background:#FAFBFC}
+  .compare-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .compare-col h4{font-size:13px;color:#6B7780;margin-bottom:8px;text-transform:uppercase;letter-spacing:.02em}
+  .empty-note{color:#8D9599;font-size:13px;padding:24px;text-align:center}
+  .data-note{font-size:11.5px;color:#B5BBBE;margin-top:10px}
+  .badge-gap{background:#FFF3E0;color:#E8610A;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:600}
 </style>
 </head>
 <body>
@@ -64,7 +84,7 @@
 <div id="gate">
   <div class="gate-box">
     <h1>Báo cáo nội bộ ICD</h1>
-    <p class="sub">Số hoạt động CRM · Báo cáo Huyền/Trang · Khách hàng chuyển sales</p>
+    <p class="sub">Số hoạt động CRM · Huyền/Trang/Lý · Khách hàng chuyển sales</p>
     <input type="password" id="gate-pass" placeholder="Mật khẩu nội bộ" autocomplete="off">
     <button id="gate-btn">Mở dashboard</button>
     <div id="gate-msg"></div>
@@ -76,98 +96,360 @@
     <h1>Báo cáo nội bộ ICD</h1>
     <span class="gen-at" id="gen-at"></span>
   </header>
-  <div class="mode-switch" id="mode-switch">
-    <button class="mode-btn" data-mode="daily">Hôm nay</button>
-    <button class="mode-btn" data-mode="year">Cả năm 2026</button>
-  </div>
   <div class="tabs" id="tabs"></div>
-  <div class="panel">
-    <div class="panel-meta" id="panel-meta"></div>
-    <iframe id="report-frame"></iframe>
+
+  <div class="controls">
+    <div class="ctl-group">
+      <label>Chế độ</label>
+      <div class="mode-switch" id="mode-switch">
+        <button class="mode-btn active" data-mode="single">Xem 1 kỳ</button>
+        <button class="mode-btn" data-mode="compare">So sánh 2 kỳ</button>
+      </div>
+    </div>
+    <div class="ctl-group">
+      <label id="lbl-a">Kỳ xem</label>
+      <div style="display:flex;gap:8px">
+        <select id="gran-a">
+          <option value="day">Ngày</option>
+          <option value="week">Tuần</option>
+          <option value="month">Tháng</option>
+          <option value="year">Năm</option>
+        </select>
+        <span id="date-input-a-wrap"></span>
+      </div>
+    </div>
+    <div class="compare-b" id="compare-b">
+      <div class="vs-divider">so với</div>
+      <div class="ctl-group">
+        <label>Kỳ so sánh</label>
+        <div style="display:flex;gap:8px">
+          <select id="gran-b">
+            <option value="day">Ngày</option>
+            <option value="week">Tuần</option>
+            <option value="month">Tháng</option>
+            <option value="year">Năm</option>
+          </select>
+          <span id="date-input-b-wrap"></span>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <div class="panel" id="panel"></div>
 </div>
 
-<script src="crypto-gate.js?v=3"></script>
+<script src="crypto-gate.js?v=4"></script>
 <script>
-const REPORTS = [
-  {daily: "crm-activity", year: "crm-activity-year", label: "Số hoạt động CRM"},
-  {daily: "huyen",        year: "huyen-year",        label: "CRM & Lead (Huyền)"},
-  {daily: "trang",        year: "trang-year",         label: "Báo cáo Trang"},
-  {daily: "leads",        year: "leads-year",         label: "Khách hàng chuyển sales"},
+const TABS = [
+  {id: "crm-activity", label: "Báo cáo thao tác CRM"},
+  {id: "huyen",        label: "Huyền Sales Admin"},
+  {id: "trang",        label: "Trang Sales"},
+  {id: "ly",           label: "Lý"},
 ];
 
-let currentMode = "daily";
-let currentReport = null;
-
-function freshness(updatedAt) {
-  if (!updatedAt) return "missing";
-  const h = (Date.now() - new Date(updatedAt).getTime()) / 3600000;
-  if (h < 30) return "fresh";
-  if (h < 72) return "stale";
-  return "missing";
-}
+let currentTab = "crm-activity";
+let currentMode = "single";
 
 function fmtTime(iso) {
   if (!iso) return "chưa có dữ liệu";
   const d = new Date(iso);
   return d.toLocaleString("vi-VN", {hour:"2-digit",minute:"2-digit",day:"2-digit",month:"2-digit",year:"numeric"});
 }
+function fmtMoney(n) {
+  return Math.round(n||0).toLocaleString("vi-VN") + " đ";
+}
+function pad2(n) { return String(n).padStart(2, "0"); }
+function toISO(d) { return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+function todayISO() { return toISO(new Date()); }
 
-function idFor(rep) { return currentMode === "year" ? rep.year : rep.daily; }
+/* ---- Khoảng ngày theo granularity ---- */
+function rangeFor(gran, refVal) {
+  let start, end;
+  if (gran === "day") {
+    start = new Date(refVal + "T00:00:00");
+    end = new Date(refVal + "T00:00:00");
+  } else if (gran === "week") {
+    const d = new Date(refVal + "T00:00:00");
+    const day = d.getDay();
+    const diffToMon = (day === 0 ? -6 : 1 - day);
+    start = new Date(d); start.setDate(d.getDate() + diffToMon);
+    end = new Date(start); end.setDate(start.getDate() + 6);
+  } else if (gran === "month") {
+    const [y, m] = refVal.split("-").map(Number);
+    start = new Date(y, m - 1, 1);
+    end = new Date(y, m, 0);
+  } else if (gran === "year") {
+    const y = Number(refVal);
+    start = new Date(y, 0, 1);
+    end = new Date(y, 11, 31);
+  }
+  return {start, end};
+}
+function datesInRange(start, end) {
+  const out = [];
+  let cur = new Date(start);
+  const endTime = end.getTime();
+  while (cur.getTime() <= endTime) {
+    out.push(toISO(cur));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return out;
+}
+function labelFor(gran, refVal) {
+  const {start, end} = rangeFor(gran, refVal);
+  const f = (d) => d.toLocaleDateString("vi-VN", {day:"2-digit", month:"2-digit", year:"numeric"});
+  if (gran === "day") return f(start);
+  if (gran === "week") return `Tuần ${f(start)} - ${f(end)}`;
+  if (gran === "month") return `Tháng ${refVal.split("-")[1]}/${refVal.split("-")[0]}`;
+  if (gran === "year") return `Năm ${refVal}`;
+  return "";
+}
 
-function selectReport(reportLabel) {
-  const rep = REPORTS.find(x => x.label === reportLabel);
-  currentReport = reportLabel;
-  const id = idFor(rep);
-  const data = window.__DATA;
-  const r = (data.reports || {})[id] || {};
-  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.label === reportLabel));
+/* ---- Input control theo granularity ---- */
+function renderDateInput(wrapId, gran, defaultVal) {
+  const wrap = document.getElementById(wrapId);
+  let html;
+  if (gran === "day" || gran === "week") {
+    html = `<input type="date" value="${defaultVal}">`;
+  } else if (gran === "month") {
+    html = `<input type="month" value="${defaultVal}">`;
+  } else {
+    html = `<input type="number" min="2020" max="2035" value="${defaultVal}" style="width:90px">`;
+  }
+  wrap.innerHTML = html;
+  return wrap.querySelector("input");
+}
+function defaultValFor(gran) {
+  const now = new Date();
+  if (gran === "day" || gran === "week") return todayISO();
+  if (gran === "month") return `${now.getFullYear()}-${pad2(now.getMonth()+1)}`;
+  return String(now.getFullYear());
+}
 
-  const meta = document.getElementById("panel-meta");
-  const frame = document.getElementById("report-frame");
-  if (!r.html) {
-    meta.innerHTML = `<span><b>${rep.label}</b></span><span>Chưa có dữ liệu</span>`;
-    const hint = currentMode === "year"
-      ? "Báo cáo cả năm cập nhật thủ công khi có yêu cầu (dữ liệu tổng hợp từ MISA/CRM)."
-      : "Báo cáo tự cập nhật lúc 15:20 hàng ngày.";
-    frame.srcdoc = `<div style="font-family:-apple-system,Arial,sans-serif;padding:60px 20px;text-align:center;color:#6B7780;background:#fff">Chưa có báo cáo nào được đồng bộ cho mục này.<br><br>${hint}</div>`;
+let inputA, inputB;
+function refreshInputA() {
+  const gran = document.getElementById("gran-a").value;
+  inputA = renderDateInput("date-input-a-wrap", gran, defaultValFor(gran));
+  inputA.addEventListener("change", render);
+}
+function refreshInputB() {
+  const gran = document.getElementById("gran-b").value;
+  inputB = renderDateInput("date-input-b-wrap", gran, defaultValFor(gran));
+  inputB.addEventListener("change", render);
+}
+
+/* ---- Aggregation: CRM activity ---- */
+function aggCRM(dates) {
+  const days = window.__DATA.crmActivityDaily || {};
+  let total = 0, byUser = {}, daysWithData = 0;
+  dates.forEach(d => {
+    const rep = days[d];
+    if (!rep) return;
+    daysWithData++;
+    total += rep.meta.total_rows;
+    (rep.by_user || []).forEach(row => {
+      const [user, dept, cnt] = row;
+      byUser[user] = byUser[user] || {dept, total: 0};
+      byUser[user].total += cnt;
+    });
+  });
+  return {total, byUser, daysWithData, daysInRange: dates.length};
+}
+
+/* ---- Aggregation: Saleorder (huyen/trang) ---- */
+function aggSaleorder(who, dates) {
+  const days = (window.__DATA.saleorderDaily || {})[who] || {};
+  let soDon = 0, doanhSo = 0, customers = new Set(), orders = [], daysWithData = 0;
+  dates.forEach(d => {
+    const rep = days[d];
+    if (!rep) return;
+    daysWithData++;
+    soDon += rep.so_don;
+    doanhSo += rep.doanh_so;
+    (rep.don_hang || []).forEach(o => { customers.add(o.kh); orders.push(Object.assign({ngay: d}, o)); });
+  });
+  orders.sort((a, b) => b.ngay.localeCompare(a.ngay));
+  return {soDon, doanhSo, soKh: customers.size, orders, daysWithData, daysInRange: dates.length};
+}
+
+/* ---- Aggregation: Leads (optionally filter theo recipient) ---- */
+function aggLeads(dates, filterRecipient) {
+  const days = window.__DATA.leadsDaily || {};
+  let list = [], daysWithData = 0;
+  dates.forEach(d => {
+    const rows = days[d];
+    if (!rows) return;
+    daysWithData++;
+    rows.forEach(l => {
+      if (!filterRecipient || (l.recipients || "").includes(filterRecipient)) {
+        list.push(Object.assign({ngay: d}, l));
+      }
+    });
+  });
+  return {list, daysWithData, daysInRange: dates.length};
+}
+
+/* ---- Render: CRM activity ---- */
+function renderCRM(agg, label) {
+  const users = Object.entries(agg.byUser).sort((a, b) => b[1].total - a[1].total);
+  const rows = users.map(([user, info]) => `
+    <tr><td>${user}</td><td style="color:#6B7780;font-size:12px">${info.dept}</td>
+    <td style="text-align:right;font-weight:700;color:#E8610A">${info.total}</td></tr>`).join("");
+  const gapNote = agg.daysWithData < agg.daysInRange
+    ? `<div class="data-note"><span class="badge-gap">Lưu ý</span> Chỉ có dữ liệu ${agg.daysWithData}/${agg.daysInRange} ngày trong kỳ này (những ngày còn lại chưa được tải file nhật ký truy cập lên).</div>`
+    : "";
+  return `
+    <div class="kpi-row">
+      <div class="kpi"><div class="num">${agg.total}</div><div class="lbl">Tổng thao tác — ${label}</div></div>
+      <div class="kpi"><div class="num">${users.length}</div><div class="lbl">Nhân viên hoạt động</div></div>
+    </div>
+    <h3 class="sec">Theo nhân viên</h3>
+    <table class="data"><tr><th>Nhân viên</th><th>Phòng ban</th><th style="text-align:right">Số thao tác</th></tr>
+    ${rows || '<tr><td colspan="3" class="empty-note">Không có dữ liệu</td></tr>'}</table>
+    ${gapNote}`;
+}
+
+/* ---- Render: Saleorder ---- */
+function renderSaleorder(agg, label) {
+  const rows = agg.orders.slice(0, 200).map(o => `
+    <tr><td style="white-space:nowrap;font-size:12px;color:#6B7780">${o.ngay}</td>
+    <td>${o.ma || "—"}</td><td>${o.kh || "—"}</td>
+    <td style="text-align:right;color:#E8610A;font-weight:600">${fmtMoney(o.tien)}</td>
+    <td style="font-size:12px">${o.trang_thai || "—"}</td></tr>`).join("");
+  const moreNote = agg.orders.length > 200 ? `<div class="data-note">Hiển thị 200/${agg.orders.length} đơn gần nhất.</div>` : "";
+  const gapNote = agg.daysWithData < agg.daysInRange
+    ? `<div class="data-note"><span class="badge-gap">Lưu ý</span> Có dữ liệu ${agg.daysWithData}/${agg.daysInRange} ngày trong kỳ này (ngày không có đơn thì không hiện).</div>`
+    : "";
+  return `
+    <div class="kpi-row">
+      <div class="kpi"><div class="num">${agg.soDon}</div><div class="lbl">Số đơn — ${label}</div></div>
+      <div class="kpi"><div class="num">${fmtMoney(agg.doanhSo)}</div><div class="lbl">Doanh số</div></div>
+      <div class="kpi"><div class="num">${agg.soKh}</div><div class="lbl">Số khách hàng</div></div>
+    </div>
+    <h3 class="sec">Danh sách đơn hàng</h3>
+    <table class="data"><tr><th>Ngày</th><th>Mã đơn</th><th>Khách hàng</th><th style="text-align:right">Tổng tiền</th><th>Trạng thái</th></tr>
+    ${rows || '<tr><td colspan="5" class="empty-note">Không có đơn nào trong kỳ này</td></tr>'}</table>
+    ${moreNote}${gapNote}`;
+}
+
+/* ---- Render: Lý (CRM activity của Lý + lead nhận từ Zalo bot) ---- */
+function renderLy(dates, label) {
+  const crmAgg = aggCRM(dates);
+  const lyName = Object.keys(crmAgg.byUser).find(u => u.includes("Lý"));
+  const lyActivity = lyName ? crmAgg.byUser[lyName].total : 0;
+  const leadsAgg = aggLeads(dates, "Lý");
+  const leadRows = leadsAgg.list.slice(0, 200).map(l => `
+    <tr><td style="white-space:nowrap;font-size:12px;color:#6B7780">${l.ngay} ${l.gio}</td>
+    <td>${l.ten}</td><td>${l.sdt}</td><td style="font-size:12px;color:#555">${l.nhu_cau}</td></tr>`).join("");
+  return `
+    <div class="kpi-row">
+      <div class="kpi"><div class="num">${lyActivity}</div><div class="lbl">Thao tác CRM — ${label}</div></div>
+      <div class="kpi"><div class="num">${leadsAgg.list.length}</div><div class="lbl">Lead nhận từ Zalo bot</div></div>
+    </div>
+    <h3 class="sec">Chi tiết lead nhận được</h3>
+    <table class="data"><tr><th>Thời gian</th><th>Khách hàng</th><th>SĐT</th><th>Nhu cầu</th></tr>
+    ${leadRows || '<tr><td colspan="4" class="empty-note">Không có lead nào trong kỳ này</td></tr>'}</table>
+    <div class="data-note">Thao tác CRM chi tiết theo loại đối tượng: xem tab "Báo cáo thao tác CRM" cùng khoảng thời gian.</div>`;
+}
+
+function renderTabContent(tabId, dates, label) {
+  if (tabId === "crm-activity") return renderCRM(aggCRM(dates), label);
+  if (tabId === "huyen") return renderSaleorder(aggSaleorder("huyen", dates), label);
+  if (tabId === "trang") return renderSaleorder(aggSaleorder("trang", dates), label);
+  if (tabId === "ly") return renderLy(dates, label);
+  return "";
+}
+
+/* ---- KPI so sánh: chỉ áp dụng cho Huyền/Trang (số) và CRM (tổng thao tác) ---- */
+function renderCompareKpis(tabId, aggA, aggB, labelA, labelB) {
+  function pick(a) {
+    if (tabId === "crm-activity") return [{n: a.total, l: "Tổng thao tác"}];
+    if (tabId === "huyen" || tabId === "trang") return [
+      {n: a.soDon, l: "Số đơn"}, {n: a.doanhSo, l: "Doanh số", money: true}, {n: a.soKh, l: "Số KH"}];
+    return [];
+  }
+  const va = pick(aggA), vb = pick(aggB);
+  if (!va.length) return "";
+  const cards = va.map((item, i) => {
+    const b = vb[i];
+    const delta = b.n ? ((item.n - b.n) / b.n * 100) : (item.n ? 100 : 0);
+    const cls = delta >= 0 ? "up" : "down";
+    const arrow = delta >= 0 ? "▲" : "▼";
+    const fmt = (x) => item.money ? fmtMoney(x) : x;
+    return `<div class="kpi"><div class="num">${fmt(item.n)}</div><div class="lbl">${item.l} — ${labelA}</div>
+      <div class="delta ${cls}">${arrow} ${Math.abs(delta).toFixed(1)}% so với ${labelB} (${fmt(b.n)})</div></div>`;
+  }).join("");
+  return `<div class="kpi-row">${cards}</div>`;
+}
+
+function render() {
+  const panel = document.getElementById("panel");
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.id === currentTab));
+
+  const granA = document.getElementById("gran-a").value;
+  const valA = inputA.value;
+  if (!valA) return;
+  const {start: startA, end: endA} = rangeFor(granA, valA);
+  const datesA = datesInRange(startA, endA);
+  const labelA = labelFor(granA, valA);
+
+  if (currentMode === "single") {
+    panel.innerHTML = renderTabContent(currentTab, datesA, labelA);
     return;
   }
-  meta.innerHTML = `<span><b>${r.subject || rep.label}</b></span><span>Cập nhật: ${fmtTime(r.updated_at)}</span>`;
-  frame.srcdoc = r.html;
+
+  const granB = document.getElementById("gran-b").value;
+  const valB = inputB ? inputB.value : null;
+  if (!valB) { panel.innerHTML = renderTabContent(currentTab, datesA, labelA); return; }
+  const {start: startB, end: endB} = rangeFor(granB, valB);
+  const datesB = datesInRange(startB, endB);
+  const labelB = labelFor(granB, valB);
+
+  let aggA, aggB;
+  if (currentTab === "crm-activity") { aggA = aggCRM(datesA); aggB = aggCRM(datesB); }
+  else if (currentTab === "huyen") { aggA = aggSaleorder("huyen", datesA); aggB = aggSaleorder("huyen", datesB); }
+  else if (currentTab === "trang") { aggA = aggSaleorder("trang", datesA); aggB = aggSaleorder("trang", datesB); }
+
+  const kpiCompare = (currentTab === "ly") ? "" : renderCompareKpis(currentTab, aggA, aggB, labelA, labelB);
+
+  panel.innerHTML = `
+    ${kpiCompare}
+    <div class="compare-wrap">
+      <div class="compare-col"><h4>${labelA}</h4>${renderTabContent(currentTab, datesA, labelA)}</div>
+      <div class="compare-col"><h4>${labelB}</h4>${renderTabContent(currentTab, datesB, labelB)}</div>
+    </div>`;
 }
 
 function renderTabs() {
-  const data = window.__DATA;
   const tabsEl = document.getElementById("tabs");
-  tabsEl.innerHTML = REPORTS.map(rep => {
-    const id = idFor(rep);
-    const r = data.reports[id] || {};
-    return `<div class="tab" data-label="${rep.label}"><span class="dot ${freshness(r.updated_at)}"></span>${rep.label}</div>`;
-  }).join("");
+  tabsEl.innerHTML = TABS.map(t => `<div class="tab" data-id="${t.id}">${t.label}</div>`).join("");
   tabsEl.querySelectorAll(".tab").forEach(el => {
-    el.addEventListener("click", () => selectReport(el.dataset.label));
+    el.addEventListener("click", () => { currentTab = el.dataset.id; render(); });
   });
-}
-
-function setMode(mode) {
-  currentMode = mode;
-  document.querySelectorAll(".mode-btn").forEach(b => b.classList.toggle("active", b.dataset.mode === mode));
-  renderTabs();
-  selectReport(currentReport || REPORTS[0].label);
 }
 
 window.bootApp = function () {
   const data = window.__DATA || {};
-  if (!data.reports) data.reports = {};
   window.__DATA = data;
   document.getElementById("gen-at").textContent = "Đồng bộ lúc: " + fmtTime(data.generated_at);
 
+  renderTabs();
+  refreshInputA();
+
+  document.getElementById("gran-a").addEventListener("change", () => { refreshInputA(); render(); });
+  document.getElementById("gran-b").addEventListener("change", () => { refreshInputB(); render(); });
+
   document.querySelectorAll(".mode-btn").forEach(b => {
-    b.addEventListener("click", () => setMode(b.dataset.mode));
+    b.addEventListener("click", () => {
+      currentMode = b.dataset.mode;
+      document.querySelectorAll(".mode-btn").forEach(x => x.classList.toggle("active", x === b));
+      document.getElementById("compare-b").classList.toggle("show", currentMode === "compare");
+      if (currentMode === "compare" && !inputB) refreshInputB();
+      render();
+    });
   });
 
-  setMode("daily");
+  render();
 };
 </script>
 </body>
