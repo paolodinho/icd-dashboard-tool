@@ -18,7 +18,10 @@ VPS_HOST = "root@45.251.115.47"
 VPS_KEY = str(Path.home() / ".ssh/icd_vps_automation")
 VPS_SNAPSHOT_PATH = "/opt/icd-chatbot/nhat-ky-truy-cap/dashboard-snapshot.json"
 
-REPORT_IDS = ["crm-activity", "huyen", "trang", "leads"]
+REPORT_IDS = [
+    "crm-activity", "huyen", "trang", "leads",
+    "crm-activity-year", "huyen-year", "trang-year", "leads-year",
+]
 
 
 def pull_vps_snapshot():

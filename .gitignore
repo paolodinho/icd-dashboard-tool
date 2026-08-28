@@ -2,3 +2,4 @@ data-private/
 snapshots/
 .DS_Store
 node_modules/
+backups/
