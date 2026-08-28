@@ -26,7 +26,7 @@
       window.__DATA = data;
       try { sessionStorage.setItem("icd-dashboard-pass", pass); } catch (e) {}
       document.getElementById("gate").style.display = "none";
-      document.getElementById("app-root").style.display = "";
+      document.getElementById("app-root").style.display = "block";
       if (window.bootApp) window.bootApp();
     } catch (e) {
       msg.textContent = "Sai mật khẩu. Thử lại.";
