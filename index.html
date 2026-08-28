@@ -434,7 +434,18 @@ window.bootApp = function () {
   document.getElementById("gen-at").textContent = "Đồng bộ lúc: " + fmtTime(data.generated_at);
 
   renderTabs();
+
+  // Deep-link: ?date=YYYY-MM-DD&tab=huyen -> mở đúng ngày/tab đó (dùng trong email báo cáo).
+  const params = new URLSearchParams(window.location.search);
+  const qDate = params.get("date");
+  const qTab = params.get("tab");
+  if (qTab && TABS.some(t => t.id === qTab)) currentTab = qTab;
+
   refreshInputA();
+  if (qDate && /^\d{4}-\d{2}-\d{2}$/.test(qDate)) {
+    document.getElementById("gran-a").value = "day";
+    inputA.value = qDate;
+  }
 
   document.getElementById("gran-a").addEventListener("change", () => { refreshInputA(); render(); });
   document.getElementById("gran-b").addEventListener("change", () => { refreshInputB(); render(); });
