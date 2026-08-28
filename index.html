@@ -4,48 +4,52 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light">
+<meta name="darkreader-lock">
 <title>Báo cáo nội bộ ICD</title>
 <style>
-  :root{color-scheme:dark}
+  :root{color-scheme:light}
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-       background:#0f1117;color:#e2e8f0;min-height:100vh}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+       background:#F4F5F7;color:#27343A;min-height:100vh}
 
   /* ---- Gate ---- */
   #gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-  .gate-box{background:#1e2432;border:1px solid #2d3748;border-radius:12px;padding:32px 28px;
-            width:100%;max-width:340px;text-align:center}
-  .gate-box h1{font-size:17px;color:#fff;margin-bottom:6px}
-  .gate-box p.sub{font-size:13px;color:#64748b;margin-bottom:20px}
-  .gate-box input{width:100%;padding:11px 14px;border-radius:8px;border:1px solid #2d3748;
-                   background:#0d1117;color:#e2e8f0;font-size:15px;margin-bottom:12px}
+  .gate-box{background:#FFFFFF;border:1px solid #E2E5E8;border-top:4px solid #FB7703;
+            border-radius:10px;padding:32px 28px;width:100%;max-width:360px;text-align:center}
+  .gate-box h1{font-size:18px;color:#27343A;margin-bottom:6px}
+  .gate-box p.sub{font-size:13px;color:#6B7780;margin-bottom:20px;line-height:1.5}
+  .gate-box input{width:100%;padding:12px 14px;border-radius:8px;border:1px solid #C9CFD4;
+                   background:#FFFFFF;color:#27343A;font-size:16px;margin-bottom:12px}
   .gate-box input:focus{outline:none;border-color:#FB7703}
-  .gate-box button{width:100%;padding:11px;border:none;border-radius:8px;background:#FB7703;
-                    color:#27343A;font-weight:700;font-size:14px;cursor:pointer}
+  .gate-box button{width:100%;padding:12px;border:none;border-radius:8px;background:#FB7703;
+                    color:#FFFFFF;font-weight:700;font-size:15px;cursor:pointer}
   .gate-box button:disabled{opacity:.5;cursor:not-allowed}
-  #gate-msg{font-size:12.5px;color:#64748b;margin-top:10px;min-height:16px}
+  #gate-msg{font-size:13px;color:#6B7780;margin-top:10px;min-height:18px}
 
   /* ---- App ---- */
   #app-root{display:none;padding:20px;max-width:1100px;margin:0 auto}
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px}
-  header h1{font-size:18px;color:#fff}
-  header .gen-at{font-size:12px;color:#64748b}
+  header{display:flex;align-items:center;justify-content:space-between;
+         margin-bottom:18px;flex-wrap:wrap;gap:8px}
+  header h1{font-size:19px;color:#27343A}
+  header .gen-at{font-size:12.5px;color:#6B7780}
   .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-  .tab{background:#1e2432;border:1px solid #2d3748;color:#94a3b8;padding:9px 14px;border-radius:8px;
-       font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px}
-  .tab.active{background:#27343A;border-color:#FB7703;color:#fff}
-  .dot{width:7px;height:7px;border-radius:50%;background:#334155}
-  .dot.fresh{background:#22c55e}
-  .dot.stale{background:#f59e0b}
-  .dot.missing{background:#ef4444}
-  .panel{background:#fff;border-radius:10px;overflow:hidden;border:1px solid #2d3748}
-  .panel-meta{background:#1e2432;padding:10px 16px;font-size:12px;color:#94a3b8;
-              display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
-  .panel-meta b{color:#e2e8f0}
-  iframe#report-frame{width:100%;height:78vh;border:none;display:block;background:#fff}
-  .empty{padding:60px 20px;text-align:center;color:#94a3b8;font-size:14px}
+  .tab{background:#FFFFFF;border:1px solid #E2E5E8;color:#27343A;padding:10px 15px;
+       border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;
+       display:flex;align-items:center;gap:7px}
+  .tab.active{border-color:#FB7703;border-left:3px solid #FB7703;background:#FFF8F2}
+  .dot{width:8px;height:8px;border-radius:50%;background:#C9CFD4;flex:none}
+  .dot.fresh{background:#1F9D55}
+  .dot.stale{background:#E8610A}
+  .dot.missing{background:#C0392B}
+  .panel{background:#FFFFFF;border:1px solid #E2E5E8;border-radius:10px;overflow:hidden}
+  .panel-meta{background:#FAFBFC;border-bottom:1px solid #E2E5E8;padding:11px 16px;
+              font-size:12.5px;color:#6B7780;display:flex;justify-content:space-between;
+              flex-wrap:wrap;gap:6px}
+  .panel-meta b{color:#27343A}
+  iframe#report-frame{width:100%;height:76vh;min-height:460px;border:none;
+                      display:block;background:#fff}
 </style>
 </head>
 <body>
@@ -72,7 +76,7 @@
   </div>
 </div>
 
-<script src="crypto-gate.js"></script>
+<script src="crypto-gate.js?v=2"></script>
 <script>
 const REPORTS = [
   {id: "crm-activity", label: "Số hoạt động CRM"},
@@ -95,34 +99,33 @@ function fmtTime(iso) {
   return d.toLocaleString("vi-VN", {hour:"2-digit",minute:"2-digit",day:"2-digit",month:"2-digit",year:"numeric"});
 }
 
-let activeId = null;
-
 function selectReport(id) {
-  activeId = id;
   const data = window.__DATA;
-  const r = data.reports[id] || {};
+  const r = (data.reports || {})[id] || {};
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.id === id));
 
   const meta = document.getElementById("panel-meta");
   const frame = document.getElementById("report-frame");
+  const label = (REPORTS.find(x => x.id === id) || {}).label || "";
   if (!r.html) {
-    meta.innerHTML = `<span>${REPORTS.find(x=>x.id===id).label}</span><span>Chưa có dữ liệu</span>`;
-    frame.srcdoc = '<div style="font-family:sans-serif;padding:60px;text-align:center;color:#999">Chưa có báo cáo nào được đồng bộ cho mục này.</div>';
+    meta.innerHTML = `<span><b>${label}</b></span><span>Chưa có dữ liệu</span>`;
+    frame.srcdoc = '<div style="font-family:-apple-system,Arial,sans-serif;padding:60px 20px;text-align:center;color:#6B7780;background:#fff">Chưa có báo cáo nào được đồng bộ cho mục này.<br><br>Báo cáo tự cập nhật lúc 15:20 hàng ngày.</div>';
     return;
   }
-  meta.innerHTML = `<span><b>${r.subject || ""}</b></span><span>Cập nhật lúc: ${fmtTime(r.updated_at)}</span>`;
+  meta.innerHTML = `<span><b>${r.subject || label}</b></span><span>Cập nhật: ${fmtTime(r.updated_at)}</span>`;
   frame.srcdoc = r.html;
 }
 
 window.bootApp = function () {
-  const data = window.__DATA;
+  const data = window.__DATA || {};
+  if (!data.reports) data.reports = {};
+  window.__DATA = data;
   document.getElementById("gen-at").textContent = "Đồng bộ lúc: " + fmtTime(data.generated_at);
 
   const tabsEl = document.getElementById("tabs");
   tabsEl.innerHTML = REPORTS.map(r => {
     const rep = data.reports[r.id] || {};
-    const cls = freshness(rep.updated_at);
-    return `<div class="tab" data-id="${r.id}"><span class="dot ${cls}"></span>${r.label}</div>`;
+    return `<div class="tab" data-id="${r.id}"><span class="dot ${freshness(rep.updated_at)}"></span>${r.label}</div>`;
   }).join("");
 
   tabsEl.querySelectorAll(".tab").forEach(el => {

@@ -24,7 +24,7 @@
       const enc = await (await fetch("data-enc.json?cb=" + Date.now())).json();
       const data = await decrypt(enc, pass);
       window.__DATA = data;
-      try { sessionStorage.setItem("icd-quote-pass", pass); } catch (e) {}
+      try { sessionStorage.setItem("icd-dashboard-pass", pass); } catch (e) {}
       document.getElementById("gate").style.display = "none";
       document.getElementById("app-root").style.display = "";
       if (window.bootApp) window.bootApp();
@@ -41,7 +41,7 @@
     btn.addEventListener("click", tryUnlock);
     inp.addEventListener("keydown", (e) => { if (e.key === "Enter") tryUnlock(); });
     // tự mở lại nếu đã nhập trong phiên
-    const saved = (() => { try { return sessionStorage.getItem("icd-quote-pass"); } catch (e) { return null; } })();
+    const saved = (() => { try { return sessionStorage.getItem("icd-dashboard-pass"); } catch (e) { return null; } })();
     if (saved) { inp.value = saved; tryUnlock(); } else { inp.focus(); }
   });
 })();
