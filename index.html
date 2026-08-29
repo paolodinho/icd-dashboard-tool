@@ -67,7 +67,12 @@
   .kpi .delta{font-size:12px;font-weight:700;margin-top:4px}
   .kpi .delta.up{color:#1F9D55}
   .kpi .delta.down{color:#C0392B}
-  h3.sec{font-size:15px;color:#27343A;margin:18px 0 10px;padding-left:10px;border-left:3px solid #FB7703}
+  h3.sec{font-size:15px;color:#27343A;margin:26px 0 10px;padding-left:10px;
+         border-left:3px solid #FB7703;position:relative}
+  h3.sec::before{content:"";display:block;position:absolute;top:-14px;left:0;
+                 width:40px;height:2px;background:#E2E5E8}
+  h3.sec:first-child{margin-top:0}
+  h3.sec:first-child::before{display:none}
   table.data{width:100%;border-collapse:collapse;font-size:13px}
   table.data th{background:#27343A;color:#fff;padding:8px 12px;text-align:left;font-weight:600;font-size:12.5px}
   table.data td{padding:7px 12px;border-bottom:1px solid #F0F0F0}
@@ -416,17 +421,7 @@ function renderCRM(agg, label, opts) {
 }
 
 /* ---- Render: Saleorder (Huyền/Trang) — bám nội dung mail báo cáo ngày cũ:
-   Số đơn / Đã giao / Chưa giao / Doanh số + trend nhiều ngày khi xem theo kỳ dài ---- */
-function statusGroup(agg) {
-  let daGiao = 0, chuaGiao = 0, huy = 0;
-  agg.orders.forEach(o => {
-    const s = o.trang_thai || "";
-    if (s === "Đã thực hiện") daGiao++;
-    else if (s === "Đã hủy bỏ") huy++;
-    else chuaGiao++;
-  });
-  return {daGiao, chuaGiao, huy};
-}
+   Số đơn / Đã giao / Chưa giao / Doanh số ---- */
 function renderSaleorder(agg, label, dates, opts, gran, leadRecipient) {
   opts = opts || {};
   const leadCount = leadRecipient ? aggLeads(dates, leadRecipient).list.length : null;
@@ -439,12 +434,6 @@ function renderSaleorder(agg, label, dates, opts, gran, leadRecipient) {
   const gapNote = agg.daysWithData < agg.daysInRange
     ? `<div class="data-note"><span class="badge-gap">Lưu ý</span> Có dữ liệu ${agg.daysWithData}/${agg.daysInRange} ngày trong kỳ này (ngày không có đơn thì không hiện).</div>`
     : "";
-  const st = statusGroup(agg);
-  const statusChart = agg.soDon ? barChart([
-    {label: "Đã thực hiện", value: st.daGiao, color: "#1F9D55"},
-    {label: "Chưa/đang thực hiện", value: st.chuaGiao, color: "#E8610A"},
-    {label: "Đã hủy bỏ", value: st.huy, color: "#B5BBBE"},
-  ], {labelW: 150}) : "";
   const leadCard = leadCount === null ? "" :
     `<div class="kpi"><div class="num">${leadCount}</div><div class="lbl">Lead nhận từ Zalo bot — ${label}</div></div>`;
   const kpiRow = opts.skipKpi ? "" : `
@@ -470,8 +459,6 @@ function renderSaleorder(agg, label, dates, opts, gran, leadRecipient) {
   return `
     ${kpiRow}
     ${leadSection}
-    <h3 class="sec">Tình trạng đơn hàng</h3>
-    ${statusChart || '<div class="empty-note">Không có đơn nào trong kỳ này</div>'}
     <h3 class="sec">Danh sách đơn hàng</h3>
     <table class="data"><tr><th>Ngày</th><th>Mã đơn</th><th>Khách hàng</th><th style="text-align:right">Tổng tiền</th><th>Trạng thái</th></tr>
     ${rows || '<tr><td colspan="5" class="empty-note">Không có đơn nào trong kỳ này</td></tr>'}</table>
