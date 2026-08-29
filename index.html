@@ -295,28 +295,48 @@ function barChart(items, opts) {
   return `<div class="chart-wrap"><svg viewBox="0 0 ${chartW} ${h}" xmlns="http://www.w3.org/2000/svg">${rows}</svg></div>`;
 }
 
-/* ---- Chart helper: bar chart theo ngày (trend nhiều ngày trong 1 kỳ) ---- */
-function trendChart(dates, values, opts) {
+/* ---- Chart helper: bar chart trend theo trục thời gian (ngày hoặc tháng) ----
+   items: [{label, value, title}] — label đã format sẵn để hiện dưới trục,
+   title (optional) hiện đầy đủ khi hover. ---- */
+function trendChart(items, opts) {
   opts = opts || {};
   const fmt = opts.money ? fmtMoney : (x => String(x));
+  const values = items.map(i => i.value || 0);
   const max = Math.max(1, ...values);
   const chartW = 640, chartH = 160, padL = 8, padB = 22, barGap = 3;
-  const n = dates.length;
+  const n = items.length;
   const barW = Math.max(2, (chartW - padL * 2 - barGap * (n - 1)) / n);
-  const bars = dates.map((d, i) => {
-    const v = values[i] || 0;
+  const bars = items.map((it, i) => {
+    const v = it.value || 0;
     const bh = Math.max(1, (v / max) * (chartH - padB - 10));
     const x = padL + i * (barW + barGap);
     const y = chartH - padB - bh;
     const showLbl = n <= 15 || i % Math.ceil(n / 15) === 0;
-    const dayLbl = d.slice(8, 10) + "/" + d.slice(5, 7);
     return `
       <rect x="${x}" y="${y}" width="${barW}" height="${bh}" fill="#1a5fa8" rx="2">
-        <title>${d}: ${fmt(v)}</title>
+        <title>${it.title || it.label}: ${fmt(v)}</title>
       </rect>
-      ${showLbl ? `<text x="${x + barW/2}" y="${chartH - 6}" text-anchor="middle" style="font-size:9px;fill:#8D9599">${dayLbl}</text>` : ""}`;
+      ${showLbl ? `<text x="${x + barW/2}" y="${chartH - 6}" text-anchor="middle" style="font-size:9px;fill:#8D9599">${it.label}</text>` : ""}`;
   }).join("");
   return `<div class="chart-wrap"><svg viewBox="0 0 ${chartW} ${chartH}" xmlns="http://www.w3.org/2000/svg">${bars}</svg></div>`;
+}
+
+/* ---- Chuẩn bị dữ liệu trend theo granularity: ngày/tuần/tháng -> cột NGÀY;
+   năm -> cột THÁNG (gộp 12 tháng, tránh vẽ ~365 cột ngày không đọc nổi). ---- */
+function trendItemsFor(gran, dates, valueForDate) {
+  if (gran === "year") {
+    const byMonth = {};
+    dates.forEach(d => {
+      const m = d.slice(0, 7); // YYYY-MM
+      byMonth[m] = (byMonth[m] || 0) + valueForDate(d);
+    });
+    return Object.keys(byMonth).sort().map(m => ({
+      label: m.slice(5, 7) + "/" + m.slice(0, 4), value: byMonth[m], title: "Tháng " + m.slice(5, 7) + "/" + m.slice(0, 4),
+    }));
+  }
+  return dates.map(d => ({
+    label: d.slice(8, 10) + "/" + d.slice(5, 7), value: valueForDate(d), title: d,
+  }));
 }
 
 /* ---- Aggregation: CRM activity ---- */
@@ -407,7 +427,7 @@ function statusGroup(agg) {
   });
   return {daGiao, chuaGiao, huy};
 }
-function renderSaleorder(agg, label, dates, opts) {
+function renderSaleorder(agg, label, dates, opts, gran) {
   opts = opts || {};
   const rows = agg.orders.slice(0, 200).map(o => `
     <tr><td style="white-space:nowrap;font-size:12px;color:#6B7780">${o.ngay}</td>
@@ -428,8 +448,9 @@ function renderSaleorder(agg, label, dates, opts) {
   let trend = "";
   if (showTrend) {
     const byDay = (window.__DATA.saleorderDaily || {})[agg.__who] || {};
-    const vals = dates.map(d => (byDay[d] || {}).doanh_so || 0);
-    trend = `<h3 class="sec">Xu hướng doanh số theo ngày — ${label}</h3>${trendChart(dates, vals, {money: true})}`;
+    const items = trendItemsFor(gran, dates, d => (byDay[d] || {}).doanh_so || 0);
+    const trendLbl = gran === "year" ? "Xu hướng doanh số theo tháng" : "Xu hướng doanh số theo ngày";
+    trend = `<h3 class="sec">${trendLbl} — ${label}</h3>${trendChart(items, {money: true})}`;
   }
   const kpiRow = opts.skipKpi ? "" : `
     <div class="kpi-row">
@@ -485,10 +506,10 @@ function renderLy(dates, label, opts) {
     <div class="data-note">Thao tác CRM chi tiết theo loại đối tượng: xem tab "Báo cáo thao tác CRM" cùng khoảng thời gian.</div>`;
 }
 
-function renderTabContent(tabId, dates, label, opts) {
+function renderTabContent(tabId, dates, label, opts, gran) {
   if (tabId === "crm-activity") return renderCRM(aggCRM(dates), label, opts);
-  if (tabId === "huyen") return renderSaleorder(aggSaleorder("huyen", dates), label, dates, opts);
-  if (tabId === "trang") return renderSaleorder(aggSaleorder("trang", dates), label, dates, opts);
+  if (tabId === "huyen") return renderSaleorder(aggSaleorder("huyen", dates), label, dates, opts, gran);
+  if (tabId === "trang") return renderSaleorder(aggSaleorder("trang", dates), label, dates, opts, gran);
   if (tabId === "ly") return renderLy(dates, label, opts);
   return "";
 }
@@ -527,13 +548,13 @@ function render() {
   const labelA = labelFor(granA, valA);
 
   if (currentMode === "single") {
-    panel.innerHTML = renderTabContent(currentTab, datesA, labelA);
+    panel.innerHTML = renderTabContent(currentTab, datesA, labelA, null, granA);
     return;
   }
 
   const granB = document.getElementById("gran-b").value;
   const valB = inputB ? inputB.value : null;
-  if (!valB) { panel.innerHTML = renderTabContent(currentTab, datesA, labelA); return; }
+  if (!valB) { panel.innerHTML = renderTabContent(currentTab, datesA, labelA, null, granA); return; }
   const {start: startB, end: endB} = rangeFor(granB, valB);
   const datesB = datesInRange(startB, endB);
   const labelB = labelFor(granB, valB);
@@ -550,8 +571,8 @@ function render() {
   panel.innerHTML = `
     ${kpiCompare}
     <div class="compare-wrap">
-      <div class="compare-col"><h4>${labelA}</h4>${renderTabContent(currentTab, datesA, labelA, sideOpts)}</div>
-      <div class="compare-col"><h4>${labelB}</h4>${renderTabContent(currentTab, datesB, labelB, sideOpts)}</div>
+      <div class="compare-col"><h4>${labelA}</h4>${renderTabContent(currentTab, datesA, labelA, sideOpts, granA)}</div>
+      <div class="compare-col"><h4>${labelB}</h4>${renderTabContent(currentTab, datesB, labelB, sideOpts, granB)}</div>
     </div>`;
 }
 
