@@ -462,8 +462,22 @@ function renderSaleorder(agg, label, dates, opts, gran, leadRecipient) {
       <div class="kpi"><div class="num">${fmtMoney(agg.doanhSo)}</div><div class="lbl">Giá trị đơn (doanh số)</div></div>
       <div class="kpi"><div class="num">${agg.soKh}</div><div class="lbl">Số khách hàng</div></div>
     </div>`;
+  let leadSection = "";
+  if (leadRecipient) {
+    const leadList = aggLeads(dates, leadRecipient).list;
+    const leadRows = leadList.slice(0, 200).map(l => `
+      <tr><td style="white-space:nowrap;font-size:12px;color:#6B7780">${l.ngay} ${l.gio}</td>
+      <td>${l.ten}</td><td>${l.sdt}</td><td style="font-size:12px;color:#555">${l.nhu_cau}</td></tr>`).join("");
+    const leadMore = leadList.length > 200 ? `<div class="data-note">Hiển thị 200/${leadList.length} lead gần nhất.</div>` : "";
+    leadSection = `
+    <h3 class="sec">Chi tiết lead nhận được</h3>
+    <table class="data"><tr><th>Thời gian</th><th>Khách hàng</th><th>SĐT</th><th>Nhu cầu</th></tr>
+    ${leadRows || '<tr><td colspan="4" class="empty-note">Không có lead nào trong kỳ này</td></tr>'}</table>
+    ${leadMore}`;
+  }
   return `
     ${kpiRow}
+    ${leadSection}
     <h3 class="sec">Tình trạng đơn hàng</h3>
     ${statusChart || '<div class="empty-note">Không có đơn nào trong kỳ này</div>'}
     ${trend}
