@@ -445,14 +445,6 @@ function renderSaleorder(agg, label, dates, opts, gran, leadRecipient) {
     {label: "Chưa/đang thực hiện", value: st.chuaGiao, color: "#E8610A"},
     {label: "Đã hủy bỏ", value: st.huy, color: "#B5BBBE"},
   ], {labelW: 150}) : "";
-  const showTrend = dates && dates.length > 1;
-  let trend = "";
-  if (showTrend) {
-    const byDay = (window.__DATA.saleorderDaily || {})[agg.__who] || {};
-    const items = trendItemsFor(gran, dates, d => (byDay[d] || {}).doanh_so || 0);
-    const trendLbl = gran === "year" ? "Xu hướng doanh số theo tháng" : "Xu hướng doanh số theo ngày";
-    trend = `<h3 class="sec">${trendLbl} — ${label}</h3>${trendChart(items, {money: true})}`;
-  }
   const leadCard = leadCount === null ? "" :
     `<div class="kpi"><div class="num">${leadCount}</div><div class="lbl">Lead nhận từ Zalo bot — ${label}</div></div>`;
   const kpiRow = opts.skipKpi ? "" : `
@@ -480,7 +472,6 @@ function renderSaleorder(agg, label, dates, opts, gran, leadRecipient) {
     ${leadSection}
     <h3 class="sec">Tình trạng đơn hàng</h3>
     ${statusChart || '<div class="empty-note">Không có đơn nào trong kỳ này</div>'}
-    ${trend}
     <h3 class="sec">Danh sách đơn hàng</h3>
     <table class="data"><tr><th>Ngày</th><th>Mã đơn</th><th>Khách hàng</th><th style="text-align:right">Tổng tiền</th><th>Trạng thái</th></tr>
     ${rows || '<tr><td colspan="5" class="empty-note">Không có đơn nào trong kỳ này</td></tr>'}</table>
