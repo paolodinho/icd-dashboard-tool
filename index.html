@@ -427,8 +427,9 @@ function statusGroup(agg) {
   });
   return {daGiao, chuaGiao, huy};
 }
-function renderSaleorder(agg, label, dates, opts, gran) {
+function renderSaleorder(agg, label, dates, opts, gran, leadRecipient) {
   opts = opts || {};
+  const leadCount = leadRecipient ? aggLeads(dates, leadRecipient).list.length : null;
   const rows = agg.orders.slice(0, 200).map(o => `
     <tr><td style="white-space:nowrap;font-size:12px;color:#6B7780">${o.ngay}</td>
     <td>${o.ma || "—"}</td><td>${o.kh || "—"}</td>
@@ -452,8 +453,11 @@ function renderSaleorder(agg, label, dates, opts, gran) {
     const trendLbl = gran === "year" ? "Xu hướng doanh số theo tháng" : "Xu hướng doanh số theo ngày";
     trend = `<h3 class="sec">${trendLbl} — ${label}</h3>${trendChart(items, {money: true})}`;
   }
+  const leadCard = leadCount === null ? "" :
+    `<div class="kpi"><div class="num">${leadCount}</div><div class="lbl">Lead nhận từ Zalo bot — ${label}</div></div>`;
   const kpiRow = opts.skipKpi ? "" : `
     <div class="kpi-row">
+      ${leadCard}
       <div class="kpi"><div class="num">${agg.soDon}</div><div class="lbl">Số đơn — ${label}</div></div>
       <div class="kpi"><div class="num">${fmtMoney(agg.doanhSo)}</div><div class="lbl">Giá trị đơn (doanh số)</div></div>
       <div class="kpi"><div class="num">${agg.soKh}</div><div class="lbl">Số khách hàng</div></div>
@@ -508,21 +512,25 @@ function renderLy(dates, label, opts) {
 
 function renderTabContent(tabId, dates, label, opts, gran) {
   if (tabId === "crm-activity") return renderCRM(aggCRM(dates), label, opts);
-  if (tabId === "huyen") return renderSaleorder(aggSaleorder("huyen", dates), label, dates, opts, gran);
+  if (tabId === "huyen") return renderSaleorder(aggSaleorder("huyen", dates), label, dates, opts, gran, "Huyền");
   if (tabId === "trang") return renderSaleorder(aggSaleorder("trang", dates), label, dates, opts, gran);
   if (tabId === "ly") return renderLy(dates, label, opts);
   return "";
 }
 
 /* ---- KPI so sánh: chỉ áp dụng cho Huyền/Trang (số) và CRM (tổng thao tác) ---- */
-function renderCompareKpis(tabId, aggA, aggB, labelA, labelB) {
-  function pick(a) {
+function renderCompareKpis(tabId, aggA, aggB, labelA, labelB, leadA, leadB) {
+  function pick(a, lead) {
     if (tabId === "crm-activity") return [{n: a.total, l: "Tổng thao tác"}];
-    if (tabId === "huyen" || tabId === "trang") return [
-      {n: a.soDon, l: "Số đơn"}, {n: a.doanhSo, l: "Doanh số", money: true}, {n: a.soKh, l: "Số KH"}];
+    if (tabId === "huyen" || tabId === "trang") {
+      const items = [];
+      if (lead !== undefined) items.push({n: lead, l: "Lead nhận từ Zalo bot"});
+      items.push({n: a.soDon, l: "Số đơn"}, {n: a.doanhSo, l: "Doanh số", money: true}, {n: a.soKh, l: "Số KH"});
+      return items;
+    }
     return [];
   }
-  const va = pick(aggA), vb = pick(aggB);
+  const va = pick(aggA, leadA), vb = pick(aggB, leadB);
   if (!va.length) return "";
   const cards = va.map((item, i) => {
     const b = vb[i];
@@ -559,13 +567,16 @@ function render() {
   const datesB = datesInRange(startB, endB);
   const labelB = labelFor(granB, valB);
 
-  let aggA, aggB;
+  let aggA, aggB, leadA, leadB;
   if (currentTab === "crm-activity") { aggA = aggCRM(datesA); aggB = aggCRM(datesB); }
-  else if (currentTab === "huyen") { aggA = aggSaleorder("huyen", datesA); aggB = aggSaleorder("huyen", datesB); }
+  else if (currentTab === "huyen") {
+    aggA = aggSaleorder("huyen", datesA); aggB = aggSaleorder("huyen", datesB);
+    leadA = aggLeads(datesA, "Huyền").list.length; leadB = aggLeads(datesB, "Huyền").list.length;
+  }
   else if (currentTab === "trang") { aggA = aggSaleorder("trang", datesA); aggB = aggSaleorder("trang", datesB); }
 
   const isLy = currentTab === "ly";
-  const kpiCompare = isLy ? "" : renderCompareKpis(currentTab, aggA, aggB, labelA, labelB);
+  const kpiCompare = isLy ? "" : renderCompareKpis(currentTab, aggA, aggB, labelA, labelB, leadA, leadB);
   const sideOpts = isLy ? {} : {skipKpi: true};
 
   panel.innerHTML = `
