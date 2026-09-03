@@ -101,7 +101,7 @@
 <div id="gate">
   <div class="gate-box">
     <h1>Báo cáo nội bộ ICD</h1>
-    <p class="sub">Số hoạt động CRM · Huyền/Trang/Lý · Khách hàng chuyển sales</p>
+    <p class="sub">Số hoạt động CRM · Huyền/Trang · Khách hàng chuyển sales</p>
     <input type="password" id="gate-pass" placeholder="Mật khẩu nội bộ" autocomplete="off">
     <button id="gate-btn">Mở dashboard</button>
     <div id="gate-msg"></div>
@@ -169,7 +169,6 @@ const TABS = [
   {id: "crm-activity", label: "Báo cáo thao tác CRM"},
   {id: "huyen",        label: "Huyền Sales Admin"},
   {id: "trang",        label: "Trang Sales"},
-  {id: "ly",           label: "Lý"},
 ];
 
 let currentTab = "crm-activity";
@@ -465,48 +464,10 @@ function renderSaleorder(agg, label, dates, opts, gran, leadRecipient) {
     ${moreNote}${gapNote}`;
 }
 
-/* ---- Render: Lý (CRM activity của Lý + lead thùng nhựa nhận từ Zalo bot) ----
-   Lý chỉ phụ trách đúng 1 dòng sản phẩm (thùng nhựa) — lọc lead theo nhu cầu để
-   khớp đúng phạm vi việc của Lý, không hiện lẫn lead ngành khác lỡ gán nhầm. */
-const LY_PRODUCT_KEYWORDS = ["thùng nhựa", "thung nhua", "hộp nhựa", "hop nhua", "sóng nhựa", "song nhua", "khay nhựa", "khay nhua"];
-function isLyProduct(text) {
-  const t = (text || "").toLowerCase();
-  return LY_PRODUCT_KEYWORDS.some(k => t.includes(k));
-}
-function renderLy(dates, label, opts) {
-  opts = opts || {};
-  const crmAgg = aggCRM(dates);
-  const lyName = Object.keys(crmAgg.byUser).find(u => u.includes("Lý"));
-  const lyActivity = lyName ? crmAgg.byUser[lyName].total : 0;
-  const leadsAgg = aggLeads(dates, "Lý");
-  const allLy = leadsAgg.list;
-  const lyProductLeads = allLy.filter(l => isLyProduct(l.nhu_cau) || isLyProduct(l.ten));
-  const otherLeads = allLy.filter(l => !lyProductLeads.includes(l));
-  const leadRows = lyProductLeads.slice(0, 200).map(l => `
-    <tr><td style="white-space:nowrap;font-size:12px;color:#6B7780">${l.ngay} ${l.gio}</td>
-    <td>${l.ten}</td><td>${l.sdt}</td><td style="font-size:12px;color:#555">${l.nhu_cau}</td></tr>`).join("");
-  const otherNote = otherLeads.length
-    ? `<div class="data-note"><span class="badge-gap">Lưu ý</span> Có ${otherLeads.length} lead gán cho Lý nhưng nhu cầu không khớp "thùng nhựa" — có thể bot gán nhầm ngành, cần kiểm tra lại.</div>`
-    : "";
-  const kpiRow = opts.skipKpi ? "" : `
-    <div class="kpi-row">
-      <div class="kpi"><div class="num">${lyActivity}</div><div class="lbl">Thao tác CRM — ${label}</div></div>
-      <div class="kpi"><div class="num">${lyProductLeads.length}</div><div class="lbl">Lead thùng nhựa nhận từ Zalo bot</div></div>
-    </div>`;
-  return `
-    ${kpiRow}
-    <h3 class="sec">Chi tiết lead thùng nhựa nhận được</h3>
-    <table class="data"><tr><th>Thời gian</th><th>Khách hàng</th><th>SĐT</th><th>Nhu cầu</th></tr>
-    ${leadRows || '<tr><td colspan="4" class="empty-note">Không có lead thùng nhựa nào trong kỳ này</td></tr>'}</table>
-    ${otherNote}
-    <div class="data-note">Thao tác CRM chi tiết theo loại đối tượng: xem tab "Báo cáo thao tác CRM" cùng khoảng thời gian.</div>`;
-}
-
 function renderTabContent(tabId, dates, label, opts, gran) {
   if (tabId === "crm-activity") return renderCRM(aggCRM(dates), label, opts);
   if (tabId === "huyen") return renderSaleorder(aggSaleorder("huyen", dates), label, dates, opts, gran, "Huyền");
   if (tabId === "trang") return renderSaleorder(aggSaleorder("trang", dates), label, dates, opts, gran);
-  if (tabId === "ly") return renderLy(dates, label, opts);
   return "";
 }
 
@@ -567,9 +528,8 @@ function render() {
   }
   else if (currentTab === "trang") { aggA = aggSaleorder("trang", datesA); aggB = aggSaleorder("trang", datesB); }
 
-  const isLy = currentTab === "ly";
-  const kpiCompare = isLy ? "" : renderCompareKpis(currentTab, aggA, aggB, labelA, labelB, leadA, leadB);
-  const sideOpts = isLy ? {} : {skipKpi: true};
+  const kpiCompare = renderCompareKpis(currentTab, aggA, aggB, labelA, labelB, leadA, leadB);
+  const sideOpts = {skipKpi: true};
 
   panel.innerHTML = `
     ${kpiCompare}
